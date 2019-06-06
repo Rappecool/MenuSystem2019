@@ -18,6 +18,9 @@ class PUZZLEPLATFORMS_API UPuzzlePlatformsGameInstance : public UGameInstance
 
 		virtual void Init();
 
+		UFUNCTION(BlueprintCallable)
+			void LoadMenu();
+
 			//Hosts game, enables ?listen so joining can occur. changes level through WorldTravel.
 		UFUNCTION(Exec)
 			void Host();
