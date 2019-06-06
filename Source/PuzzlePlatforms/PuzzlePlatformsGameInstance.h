@@ -26,5 +26,7 @@ class PUZZLEPLATFORMS_API UPuzzlePlatformsGameInstance : public UGameInstance
 		UFUNCTION(EXEC)
 			void Join(const FString &IpAddress);
 	
-	
+	private:
+		TSubclassOf<class UUserWidget> MenuClass;
+
 };
