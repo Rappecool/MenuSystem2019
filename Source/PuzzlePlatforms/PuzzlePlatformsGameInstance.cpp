@@ -27,12 +27,25 @@ UPuzzlePlatformsGameInstance::UPuzzlePlatformsGameInstance(const FObjectInitiali
 void UPuzzlePlatformsGameInstance::LoadMenu()
 {
 	if (!ensure(MenuClass != nullptr)) return;
-		//Creates Menu widget, to use our MenuWidget_BP.
+	//Creates Menu widget, to use our MenuWidget_BP.
 	UUserWidget* Menu = CreateWidget<UUserWidget>(this, MenuClass);
 
 	if (!ensure(Menu != nullptr)) return;
-		//Adds our Menu on top of our current Viewport.
+	//Adds our Menu on top of our current Viewport.
 	Menu->AddToViewport();
+
+		//gets player controller.
+	APlayerController* PlayerController = GetFirstLocalPlayerController();
+	if (!ensure(PlayerController != nullptr)) return;
+
+	//FInputMode is a struct, therefore? can create on stack and pointer is not required. Needed for SetInputMode below.
+	FInputModeUIOnly InputMode;
+	InputMode.SetWidgetToFocus(Menu->TakeWidget());
+	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	
+	//Focuses our current viewport and enables interaction via our playerController.
+	PlayerController->SetInputMode(InputMode);
+	PlayerController->bShowMouseCursor = true;
 }
 
 void UPuzzlePlatformsGameInstance::Init()
