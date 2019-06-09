@@ -29,25 +29,10 @@ void UPuzzlePlatformsGameInstance::LoadMenu()
 {
 	if (!ensure(MenuClass != nullptr)) return;
 	//Creates Menu widget, to use our MenuWidget_BP.
-	UMainMenu* Menu = CreateWidget<UMainMenu>(this, MenuClass);
+	Menu = CreateWidget<UMainMenu>(this, MenuClass);
 
 	if (!ensure(Menu != nullptr)) return;
-	//Adds our Menu on top of our current Viewport.
-	Menu->AddToViewport();
-
-		//gets player controller.
-	APlayerController* PlayerController = GetFirstLocalPlayerController();
-	if (!ensure(PlayerController != nullptr)) return;
-
-	//FInputMode is a struct, therefore? can create on stack and pointer is not required. Needed for SetInputMode below.
-	FInputModeUIOnly InputMode;
-	InputMode.SetWidgetToFocus(Menu->TakeWidget());
-	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-	
-	//Focuses our current viewport and enables interaction via our playerController.
-	PlayerController->SetInputMode(InputMode);
-	PlayerController->bShowMouseCursor = true;
-
+	Menu->Setup();
 	Menu->setMenuInterface(this);
 }
 
@@ -58,6 +43,12 @@ void UPuzzlePlatformsGameInstance::Init()
 
 void UPuzzlePlatformsGameInstance::Host()
 {
+	if (Menu != nullptr)
+	{
+		UWorld* World = GetWorld();
+		Menu->OnLevelRemovedFromWorld(GetWorld()->GetCurrentLevel(), World);
+	}
+
 	UEngine* Engine = GetEngine();
 	if (!ensure(Engine != nullptr))
 		return;
@@ -69,8 +60,6 @@ void UPuzzlePlatformsGameInstance::Host()
 		return;
 
 	World->ServerTravel("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap?listen");
-
-	
 }
 
 void UPuzzlePlatformsGameInstance::Join(const FString &IpAddress)

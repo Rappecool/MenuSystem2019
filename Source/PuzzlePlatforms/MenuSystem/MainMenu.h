@@ -32,6 +32,10 @@ protected:
 	virtual bool Initialize();
 
 public:
+	//Sets Interface to instance wherever we call it from.
 	void setMenuInterface(IMenuInterface* MenuInterface);
+	void Setup();
+	//Automatically handles when level is being killed/player leaving.
+	virtual void OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld)override;
 
 };
