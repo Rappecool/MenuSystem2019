@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "MenuInterface.h"
 #include "MainMenu.generated.h"
 
 /**
@@ -14,7 +15,7 @@ class PUZZLEPLATFORMS_API UMainMenu : public UUserWidget
 {
 	GENERATED_BODY()
 	
-private:
+	private:
 		//Creates and binds button automatically to our BP. OBS needs to have the exact same name.
 	UPROPERTY(meta = (BindWidget))
 	class UButton* Host;
@@ -25,7 +26,12 @@ private:
 	UFUNCTION()
 	void HostServer();
 
+	IMenuInterface* MenuInterface;
+
 protected:
 	virtual bool Initialize();
+
+public:
+	void setMenuInterface(IMenuInterface* MenuInterface);
 
 };

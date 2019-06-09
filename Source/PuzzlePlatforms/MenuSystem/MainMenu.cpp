@@ -5,7 +5,10 @@
 
 void UMainMenu::HostServer()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Hosting server..."));
+	if (MenuInterface != nullptr)
+	{
+		MenuInterface->Host();
+	}
 }
 
 bool UMainMenu::Initialize()
@@ -18,4 +21,9 @@ bool UMainMenu::Initialize()
 	Host->OnClicked.AddDynamic(this, &UMainMenu::HostServer);
 	
 	return true;
+}
+
+void UMainMenu::setMenuInterface(IMenuInterface * MenuInterface)
+{
+	this->MenuInterface = MenuInterface;
 }
