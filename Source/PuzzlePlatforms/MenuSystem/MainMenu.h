@@ -14,17 +14,23 @@ UCLASS()
 class PUZZLEPLATFORMS_API UMainMenu : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
 	private:
 		//Creates and binds button automatically to our BP. OBS needs to have the exact same name.
 	UPROPERTY(meta = (BindWidget))
-	class UButton* Host;
-
+	class UButton* HostButton;
 	UPROPERTY(meta = (BindWidget))
-	class UButton* Join;
+	class UButton* JoinButton;
+	UPROPERTY(meta = (BindWidget))
+	class UWidget* JoinMenu;
+	UPROPERTY(meta = (BindWidget))
+	class UWidgetSwitcher* MenuSwitcher;
 
 	UFUNCTION()
 	void HostServer();
+
+	UFUNCTION()
+	void OpenJoinMenu();
 
 	IMenuInterface* MenuInterface;
 
