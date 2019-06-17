@@ -32,6 +32,11 @@ class PUZZLEPLATFORMS_API UMainMenu : public UUserWidget
 	UPROPERTY(meta = (BindWidget))
 	class UWidget* MainMenu;
 
+	UPROPERTY(meta = (BindWidget))
+	class UEditableTextBox* IPAdressField;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* ConfirmJoinMenuButton;
 
 	UPROPERTY(meta = (BindWidget))
 	class UWidgetSwitcher* MenuSwitcher;
@@ -40,10 +45,14 @@ class PUZZLEPLATFORMS_API UMainMenu : public UUserWidget
 	void HostServer();
 
 	UFUNCTION()
+	void JoinServer();
+
+	UFUNCTION()
 	void OpenJoinMenu();
 
 	UFUNCTION()
 	void OpenMainMenu();
+
 
 	IMenuInterface* MenuInterface;
 

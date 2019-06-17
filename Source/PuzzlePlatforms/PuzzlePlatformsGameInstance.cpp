@@ -43,9 +43,12 @@ void UPuzzlePlatformsGameInstance::Init()
 
 void UPuzzlePlatformsGameInstance::Host()
 {
+	UWorld* World = GetWorld();
+	if (!ensure(World != nullptr))
+		return;
+
 	if (Menu != nullptr)
 	{
-		UWorld* World = GetWorld();
 		Menu->OnLevelRemovedFromWorld(GetWorld()->GetCurrentLevel(), World);
 	}
 
@@ -54,16 +57,18 @@ void UPuzzlePlatformsGameInstance::Host()
 		return;
 
 	Engine->AddOnScreenDebugMessage(-1, 2, FColor::Green, TEXT("Hosting"));
-
-	UWorld* World = GetWorld();
-	if (!ensure(World != nullptr))
-		return;
-
+		//Hosts and listens so players can join.
 	World->ServerTravel("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap?listen");
 }
 
 void UPuzzlePlatformsGameInstance::Join(const FString &IpAddress)
 {
+	if (Menu != nullptr)
+	{
+		Menu->OnLevelRemovedFromWorld(GetWorld()->GetCurrentLevel(), GetWorld());
+	}
+
+
 		//TODO move GetEngine() to own function.
 	UEngine* Engine = GetEngine();
 	if (!ensure(Engine != nullptr))

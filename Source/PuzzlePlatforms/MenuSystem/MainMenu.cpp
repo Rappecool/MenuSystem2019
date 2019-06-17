@@ -3,6 +3,8 @@
 #include "MainMenu.h"
 #include "Button.h"
 #include "Components/WidgetSwitcher.h"
+#include "Components/EditableTextBox.h"
+#include "PuzzlePlatformsGameInstance.h"
 
 void UMainMenu::HostServer()
 {
@@ -10,6 +12,19 @@ void UMainMenu::HostServer()
 			return;
 		
 	MenuInterface->Host();
+}
+
+void UMainMenu::JoinServer()
+{
+	if (MenuInterface != nullptr)
+	{
+		if (!ensure(IPAdressField != nullptr))
+			return;
+
+		const FString& Adress = IPAdressField->GetText().ToString();
+		MenuInterface->Join(Adress);
+		UE_LOG(LogTemp, Warning, TEXT("JoinServer MainMenu called."));
+	}
 }
 
 void UMainMenu::OpenJoinMenu()
@@ -46,8 +61,12 @@ bool UMainMenu::Initialize()
 	JoinButton->OnClicked.AddDynamic(this, &UMainMenu::OpenJoinMenu);
 
 	if (!ensure(CancelJoinMenuButton != nullptr)) return false;
-	//Binds onClicked variable from JoinButton to our OpenJoinMenu function.
+	//Binds onClicked variable from CancelJoinMenuButton to our OpenMainMenu function.
 	CancelJoinMenuButton->OnClicked.AddDynamic(this, &UMainMenu::OpenMainMenu);
+
+	if (!ensure(ConfirmJoinMenuButton != nullptr)) return false;
+	//Binds onClicked variable from JoinButton to our OpenJoinMenu function.
+	ConfirmJoinMenuButton->OnClicked.AddDynamic(this, &UMainMenu::JoinServer);
 	
 	return true;
 }
