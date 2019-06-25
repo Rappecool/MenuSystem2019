@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "MenuWidget.h"
 #include "MenuInterface.h"
 #include "MainMenu.generated.h"
 
@@ -11,7 +11,7 @@
  * 
  */
 UCLASS()
-class PUZZLEPLATFORMS_API UMainMenu : public UUserWidget
+class PUZZLEPLATFORMS_API UMainMenu : public UMenuWidget
 {
 	GENERATED_BODY()
 
@@ -54,16 +54,8 @@ class PUZZLEPLATFORMS_API UMainMenu : public UUserWidget
 	void OpenMainMenu();
 
 
-	IMenuInterface* MenuInterface;
-
 protected:
 	virtual bool Initialize();
 
 public:
-	//Sets Interface to instance wherever we call it from.
-	void setMenuInterface(IMenuInterface* MenuInterface);
-	void Setup();
-	//Automatically handles when level is being killed/player leaving.
-	virtual void OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld)override;
-
 };
