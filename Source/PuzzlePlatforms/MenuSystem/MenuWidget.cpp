@@ -18,7 +18,7 @@ void UMenuWidget::Setup()
 	APlayerController* PlayerController = World->GetFirstPlayerController();
 	if (!ensure(PlayerController != nullptr)) return;
 
-	//FInputMode is a struct, therefore? can create on stack and pointer is not required. Needed for SetInputMode below.
+	//FInputMode is a struct, therefore(?) can create on stack and pointer is not required. Needed for SetInputMode below.
 	FInputModeUIOnly InputMode;
 	InputMode.SetWidgetToFocus(TakeWidget());
 	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);

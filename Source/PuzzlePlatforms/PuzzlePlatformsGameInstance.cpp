@@ -7,6 +7,7 @@
 #include "PlatformTrigger.h"
 #include "Blueprint/UserWidget.h"
 #include "MenuSystem/MainMenu.h"
+#include "MenuSystem/InGameMenu.h"
 #include "MenuSystem/MenuWidget.h"
 
 UPuzzlePlatformsGameInstance::UPuzzlePlatformsGameInstance(const FObjectInitializer & ObjectInitializer)
@@ -46,13 +47,27 @@ void UPuzzlePlatformsGameInstance::LoadMenu()
 
 void UPuzzlePlatformsGameInstance::InGameLoadMenu()
 {
+		//OBS: Difference between Patuzzi, Try copying github code, aka Create UserWidget. DONE, didn't work.
+		//17/7 update, Init still not getting called.
+
 	if (!ensure(InGameMenuClass != nullptr)) return;
 	//Creates Menu widget, to use our MenuWidget_BP.
-	UMenuWidget* Menu = CreateWidget<UMenuWidget>(this, InGameMenuClass);
+	UMenuWidget* InGameMenuWidget = CreateWidget<UMenuWidget>(this, InGameMenuClass); //perhaps should be created on Init before.
+
+	if (!ensure(InGameMenuWidget != nullptr)) return;
+	InGameMenuWidget->Setup();
+	InGameMenuWidget->setMenuInterface(this);
+}
+
+void UPuzzlePlatformsGameInstance::InGameMenuTest()
+{
+	if (!ensure(InGameClass != nullptr)) return;
+	//Creates Menu widget, to use our MenuWidget_BP.
+	UMenuWidget* InGameTestMenu = CreateWidget<UMenuWidget>(this, InGameClass);
 
 	if (!ensure(Menu != nullptr)) return;
-	Menu->Setup();
-	Menu->setMenuInterface(this);
+	InGameTestMenu->Setup();
+	InGameTestMenu->setMenuInterface(this);
 }
 
 void UPuzzlePlatformsGameInstance::Init()
@@ -87,7 +102,6 @@ void UPuzzlePlatformsGameInstance::Join(const FString &IpAddress)
 		Menu->OnLevelRemovedFromWorld(GetWorld()->GetCurrentLevel(), GetWorld());
 	}
 
-
 		//TODO move GetEngine() to own function.
 	UEngine* Engine = GetEngine();
 	if (!ensure(Engine != nullptr))
@@ -101,4 +115,14 @@ void UPuzzlePlatformsGameInstance::Join(const FString &IpAddress)
 		return;
 		
 	PlayerController->ClientTravel(IpAddress, TRAVEL_Absolute);
+}
+
+void UPuzzlePlatformsGameInstance::LoadMainMenu()
+{
+	APlayerController* PlayerController = GetFirstLocalPlayerController();
+
+	if (!ensure(PlayerController != nullptr))
+		return;
+
+	PlayerController->ClientTravel("/Game/MenuSystem/MainMenu", TRAVEL_Absolute);
 }

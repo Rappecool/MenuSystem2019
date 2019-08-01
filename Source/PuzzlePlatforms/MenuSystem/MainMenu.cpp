@@ -49,6 +49,7 @@ void UMainMenu::OpenMainMenu()
 
 bool UMainMenu::Initialize()
 {
+	UE_LOG(LogTemp, Warning, TEXT("MainMenu Init called!"));
 	bool success = Super::Initialize();
 	if (!success) return false;
 	

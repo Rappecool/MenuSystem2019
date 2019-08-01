@@ -2,37 +2,52 @@
 
 #include "InGameMenu.h"
 #include "Button.h"
-#include "Components/WidgetSwitcher.h"
 
-void UInGameMenu::QuitGame()
+void UInGameMenu::QuitPressed()
 {
-	if (!ensure(MenuSwitcher != nullptr))
+	UWorld* World = GetWorld();
+	if (!ensure(World != nullptr))
 		return;
-	//MenuSwitcher->SetActiveWidget()
+	if (MenuInterface != nullptr)
+	{
+		OnLevelRemovedFromWorld(World->GetCurrentLevel(), World);
+		MenuInterface->LoadMainMenu();
+	}
 }
 
-void UInGameMenu::CancelGameMenu()
+void UInGameMenu::CancelPressed()
 {
-	if (!ensure(MenuSwitcher != nullptr))
-		return;
+	UE_LOG(LogTemp, Warning, TEXT("InGameMenu CancelPressed called!"));
+	this->RemoveFromViewport();
+
+	UWorld* World = GetWorld();
+	if (!ensure(World != nullptr)) return;
+
+	APlayerController* PlayerController = World->GetFirstPlayerController();
+	if (!ensure(PlayerController != nullptr)) return;
+
+	FInputModeGameOnly InputModeData;
+	PlayerController->SetInputMode(InputModeData);
+
+	PlayerController->bShowMouseCursor = false;
+	//UE_LOG(LogTemp, Warning, TEXT("CancelPressed"));
+	//auto* World = GetWorld();
+	//OnLevelRemovedFromWorld(World->GetCurrentLevel(), World);
 }
 
-bool UInGameMenu::Initalize()
+bool UInGameMenu::Initialize()
 {
+	UE_LOG(LogTemp, Warning, TEXT("InGameMenu Init called!"));
 	bool success = Super::Initialize();
 	if (!success) return false;
 
 	if (!ensure(CancelButton != nullptr)) return false;
-	//Binds onClicked variable from HostButton to our HostServer function.
-	CancelButton->OnClicked.AddDynamic(this, &UInGameMenu::QuitGame);
+	CancelButton->OnClicked.AddDynamic(this, &UInGameMenu::CancelPressed);
 
 	if (!ensure(QuitButton != nullptr)) return false;
-	//Binds onClicked variable from JoinButton to our OpenJoinMenu function.
-	QuitButton->OnClicked.AddDynamic(this, &UInGameMenu::CancelGameMenu);
+	QuitButton->OnClicked.AddDynamic(this, &UInGameMenu::QuitPressed);
+
+	UE_LOG(LogTemp, Warning, TEXT("InGameMenu Init success!"));
 	return success;
 }
 
-void UInGameMenu::OnLevelRemovedFromWorld(ULevel * InLevel, UWorld * InWorld)
-{
-
-}

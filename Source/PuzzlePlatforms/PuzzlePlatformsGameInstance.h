@@ -25,19 +25,25 @@ public:
 		UFUNCTION(BlueprintCallable)
 			void InGameLoadMenu();
 
+		UFUNCTION(BlueprintCallable)
+			void InGameMenuTest();
+
 			//Hosts game, enables ?listen so joining can occur. changes level through WorldTravel.
 		UFUNCTION(Exec)
-			void Host();
+			void Host() override;
 			
 			//Attempts to join game hosted by given IpAdress, through clientTravel.
 		UFUNCTION(EXEC)
-			void Join(const FString &IpAddress);
+			void Join(const FString &IpAddress) override;
+
+		virtual void LoadMainMenu() override;
 	
 private:
 		TSubclassOf<class UUserWidget> MenuClass;
 		TSubclassOf<class UUserWidget> InGameMenuClass;
+		TSubclassOf<class UUserWidget> InGameClass;
+
 		class UMainMenu* Menu;
-
-
+		class UInGameMenu* InGameMenu;
 
 };

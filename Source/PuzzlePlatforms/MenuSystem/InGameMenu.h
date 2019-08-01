@@ -23,18 +23,14 @@ private:
 	class UButton* QuitButton;
 
 	UFUNCTION()
-	void QuitGame();
-
+	void QuitPressed();
 	UFUNCTION()
-	void CancelGameMenu();
-
-	UPROPERTY(meta = (BindWidget))
-	class UWidgetSwitcher* MenuSwitcher;
+		void CancelPressed();
 
 protected:
-	virtual bool Initalize();
+	virtual bool Initialize() override;
 
 public:
-	virtual void OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld) override;
+	//virtual void OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld) override;
 
 };
