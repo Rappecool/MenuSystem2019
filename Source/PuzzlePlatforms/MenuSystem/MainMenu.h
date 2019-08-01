@@ -24,6 +24,9 @@ class PUZZLEPLATFORMS_API UMainMenu : public UMenuWidget
 	class UButton* JoinButton;
 
 	UPROPERTY(meta = (BindWidget))
+	class UButton* ExitButton;
+
+	UPROPERTY(meta = (BindWidget))
 	class UButton* CancelJoinMenuButton;
 
 	UPROPERTY(meta = (BindWidget))
@@ -52,6 +55,9 @@ class PUZZLEPLATFORMS_API UMainMenu : public UMenuWidget
 
 	UFUNCTION()
 	void OpenMainMenu();
+
+	UFUNCTION()
+	void ExitPressed();
 
 
 protected:

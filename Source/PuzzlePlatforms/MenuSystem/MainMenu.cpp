@@ -47,6 +47,14 @@ void UMainMenu::OpenMainMenu()
 	MenuSwitcher->SetActiveWidget(MainMenu);
 }
 
+void UMainMenu::ExitPressed()
+{
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if (!ensure(PlayerController != nullptr)) return;
+	
+	PlayerController->ConsoleCommand("quit");
+}
+
 bool UMainMenu::Initialize()
 {
 	UE_LOG(LogTemp, Warning, TEXT("MainMenu Init called!"));
@@ -60,6 +68,10 @@ bool UMainMenu::Initialize()
 	if (!ensure(JoinButton != nullptr)) return false;
 	//Binds onClicked variable from JoinButton to our OpenJoinMenu function.
 	JoinButton->OnClicked.AddDynamic(this, &UMainMenu::OpenJoinMenu);
+
+	if (!ensure(ExitButton != nullptr)) return false;
+	//Binds onClicked variable from JoinButton to our OpenJoinMenu function.
+	ExitButton->OnClicked.AddDynamic(this, &UMainMenu::ExitPressed);
 
 	if (!ensure(CancelJoinMenuButton != nullptr)) return false;
 	//Binds onClicked variable from CancelJoinMenuButton to our OpenMainMenu function.
