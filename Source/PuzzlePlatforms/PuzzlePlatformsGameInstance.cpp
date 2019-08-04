@@ -14,6 +14,8 @@
 #include "MenuSystem/InGameMenu.h"
 #include "MenuSystem/MenuWidget.h"
 
+const static FName SESSION_NAME = TEXT("My Session Game");
+
 UPuzzlePlatformsGameInstance::UPuzzlePlatformsGameInstance(const FObjectInitializer & ObjectInitializer)
 {
 	static ConstructorHelpers::FClassFinder<APlatformTrigger> PlatformTriggerBPClass(TEXT("/Game/PuzzlePlatforms/BP_PlatformTrigger"));
@@ -88,6 +90,7 @@ void UPuzzlePlatformsGameInstance::Init()
 	if (SessionInterface.IsValid())
 	{
 		SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UPuzzlePlatformsGameInstance::OnCreateSessionComplete);
+		SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UPuzzlePlatformsGameInstance::OnDestroySessionComplete);
 	}
 
 }
@@ -96,8 +99,16 @@ void UPuzzlePlatformsGameInstance::Host()
 {
 	if (SessionInterface.IsValid())
 	{
-		FOnlineSessionSettings SessionSettings;
-		SessionInterface->CreateSession(0, TEXT("MySessionGame"), SessionSettings);
+		auto ExistingSession = SessionInterface->GetNamedSession(SESSION_NAME);
+
+		if (ExistingSession != nullptr)
+		{
+			SessionInterface->DestroySession(SESSION_NAME);
+		}
+		else
+		{
+			CreateSession();
+		}
 	}
 }
 
@@ -156,5 +167,27 @@ void UPuzzlePlatformsGameInstance::OnCreateSessionComplete(FName SessionName, bo
 	Engine->AddOnScreenDebugMessage(-1, 2, FColor::Green, TEXT("Hosting"));
 	//Hosts and listens so players can join.
 	World->ServerTravel("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap?listen");
+}
 
+void UPuzzlePlatformsGameInstance::OnDestroySessionComplete(FName SessionName, bool Success)
+{
+	if (!Success)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("OSS: OnDestroySessionComplete unsuccessful."));
+		return;
+	}
+	else
+	{
+		CreateSession();
+		UE_LOG(LogTemp, Warning, TEXT("OSS: OnDestroySessionComplete."));
+	}
+}
+
+void UPuzzlePlatformsGameInstance::CreateSession()
+{
+	if (SessionInterface.IsValid())
+	{
+	FOnlineSessionSettings SessionSettings;
+	SessionInterface->CreateSession(0, SESSION_NAME, SessionSettings);
+	}
 }
