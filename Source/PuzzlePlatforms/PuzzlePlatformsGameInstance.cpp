@@ -1,11 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PuzzlePlatformsGameInstance.h"
+
 #include "Engine/World.h"
 #include "Engine/Engine.h"
 #include "UObject/ConstructorHelpers.h"
 #include "PlatformTrigger.h"
 #include "Blueprint/UserWidget.h"
+#include "OnlineSubsystem.h"
+
 #include "MenuSystem/MainMenu.h"
 #include "MenuSystem/InGameMenu.h"
 #include "MenuSystem/MenuWidget.h"
@@ -34,7 +37,7 @@ UPuzzlePlatformsGameInstance::UPuzzlePlatformsGameInstance(const FObjectInitiali
 	InGameMenuClass = InGameMenuBPClass.Class;
 }
 
-void UPuzzlePlatformsGameInstance::LoadMenu()
+void UPuzzlePlatformsGameInstance::LoadMenuWidget()
 {
 	if (!ensure(MenuClass != nullptr)) return;
 	//Creates Menu widget, to use our MenuWidget_BP.
@@ -73,6 +76,13 @@ void UPuzzlePlatformsGameInstance::InGameMenuTest()
 void UPuzzlePlatformsGameInstance::Init()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Found class %s"), *MenuClass->GetName());
+
+	auto* SubSystem = IOnlineSubsystem::Get();
+
+	if (!ensure(SubSystem != nullptr))
+		return;
+
+	UE_LOG(LogTemp, Warning, TEXT("Found Subsystem %s"), *SubSystem->GetSubsystemName().ToString());
 }
 
 void UPuzzlePlatformsGameInstance::Host()
