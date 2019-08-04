@@ -8,6 +8,7 @@
 #include "PlatformTrigger.h"
 #include "Blueprint/UserWidget.h"
 #include "OnlineSubsystem.h"
+#include "OnlineSessionSettings.h"
 
 #include "MenuSystem/MainMenu.h"
 #include "MenuSystem/InGameMenu.h"
@@ -78,39 +79,26 @@ void UPuzzlePlatformsGameInstance::Init()
 	UE_LOG(LogTemp, Warning, TEXT("Found class %s"), *MenuClass->GetName());
 
 	auto* SubSystem = IOnlineSubsystem::Get();
-
 	if (!ensure(SubSystem != nullptr))
 		return;
 
 	UE_LOG(LogTemp, Warning, TEXT("Found Subsystem %s"), *SubSystem->GetSubsystemName().ToString());
 
-	auto SessionInterface = SubSystem->GetSessionInterface();
-
+	SessionInterface = SubSystem->GetSessionInterface();
 	if (SessionInterface.IsValid())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Found Session Interface: %s"));
+		SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UPuzzlePlatformsGameInstance::OnCreateSessionComplete);
 	}
 
 }
 
 void UPuzzlePlatformsGameInstance::Host()
 {
-	UWorld* World = GetWorld();
-	if (!ensure(World != nullptr))
-		return;
-
-	if (Menu != nullptr)
+	if (SessionInterface.IsValid())
 	{
-		Menu->OnLevelRemovedFromWorld(GetWorld()->GetCurrentLevel(), World);
+		FOnlineSessionSettings SessionSettings;
+		SessionInterface->CreateSession(0, TEXT("MySessionGame"), SessionSettings);
 	}
-
-	UEngine* Engine = GetEngine();
-	if (!ensure(Engine != nullptr))
-		return;
-
-	Engine->AddOnScreenDebugMessage(-1, 2, FColor::Green, TEXT("Hosting"));
-		//Hosts and listens so players can join.
-	World->ServerTravel("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap?listen");
 }
 
 void UPuzzlePlatformsGameInstance::Join(const FString &IpAddress)
@@ -143,4 +131,30 @@ void UPuzzlePlatformsGameInstance::LoadMainMenu()
 		return;
 
 	PlayerController->ClientTravel("/Game/MenuSystem/MainMenu", TRAVEL_Absolute);
+}
+
+void UPuzzlePlatformsGameInstance::OnCreateSessionComplete(FName SessionName, bool Success)
+{
+	if (!Success)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("OSS: OnCreateSesssion unsuccessful."));
+		return;
+	}
+	UWorld* World = GetWorld();
+	if (!ensure(World != nullptr))
+		return;
+
+	if (Menu != nullptr)
+	{
+		Menu->OnLevelRemovedFromWorld(GetWorld()->GetCurrentLevel(), World);
+	}
+
+	UEngine* Engine = GetEngine();
+	if (!ensure(Engine != nullptr))
+		return;
+
+	Engine->AddOnScreenDebugMessage(-1, 2, FColor::Green, TEXT("Hosting"));
+	//Hosts and listens so players can join.
+	World->ServerTravel("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap?listen");
+
 }
