@@ -83,6 +83,14 @@ void UPuzzlePlatformsGameInstance::Init()
 		return;
 
 	UE_LOG(LogTemp, Warning, TEXT("Found Subsystem %s"), *SubSystem->GetSubsystemName().ToString());
+
+	auto SessionInterface = SubSystem->GetSessionInterface();
+
+	if (SessionInterface.IsValid())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Found Session Interface: %s"));
+	}
+
 }
 
 void UPuzzlePlatformsGameInstance::Host()
