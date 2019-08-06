@@ -9,6 +9,7 @@
 #include "Blueprint/UserWidget.h"
 #include "OnlineSubsystem.h"
 #include "OnlineSessionSettings.h"
+#include "Runtime/Core/Public/Containers/Array.h"
 
 #include "MenuSystem/MainMenu.h"
 #include "MenuSystem/InGameMenu.h"
@@ -78,8 +79,6 @@ void UPuzzlePlatformsGameInstance::InGameMenuTest()
 
 void UPuzzlePlatformsGameInstance::Init()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Found class %s"), *MenuClass->GetName());
-
 	auto* SubSystem = IOnlineSubsystem::Get();
 	if (!ensure(SubSystem != nullptr))
 		return;
@@ -97,6 +96,8 @@ void UPuzzlePlatformsGameInstance::Init()
 		if (SessionSearch.IsValid())
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Starting Find Session..."));
+			SessionSearch->bIsLanQuery = true;
+
 			SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
 		}
 	}
@@ -192,7 +193,16 @@ void UPuzzlePlatformsGameInstance::OnDestroySessionComplete(FName SessionName, b
 
 void UPuzzlePlatformsGameInstance::OnFindSessionComplete(bool Success)
 {
-	UE_LOG(LogTemp, Warning, TEXT("OSS: Finished OnFindSessionComplete."));
+	if (Success && SessionSearch.IsValid())
+	{
+		TArray<FOnlineSessionSearchResult> SearchResults = SessionSearch->SearchResults;
+		for (const auto& searchResult : SearchResults)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("OSS - Found Session: nameSessionsIDs is: %s ."), *searchResult.GetSessionIdStr());
+		}
+
+		UE_LOG(LogTemp, Warning, TEXT("OSS: Finished OnFindSessionComplete."));
+	}
 }
 
 void UPuzzlePlatformsGameInstance::CreateSession()
@@ -200,6 +210,9 @@ void UPuzzlePlatformsGameInstance::CreateSession()
 	if (SessionInterface.IsValid())
 	{
 	FOnlineSessionSettings SessionSettings;
+	SessionSettings.bIsLANMatch = true;
+	SessionSettings.NumPublicConnections = 2;
+	SessionSettings.bShouldAdvertise = true;
 	SessionInterface->CreateSession(0, SESSION_NAME, SessionSettings);
 	}
 }
