@@ -40,6 +40,7 @@ public:
 			void Join(const FString &IpAddress) override;
 
 		virtual void LoadMainMenu() override;
+		virtual void RefreshServerList() override;
 	
 private:
 		TSubclassOf<class UUserWidget> MenuClass;

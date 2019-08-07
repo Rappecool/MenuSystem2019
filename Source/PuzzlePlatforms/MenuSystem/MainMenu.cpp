@@ -4,6 +4,7 @@
 #include "Button.h"
 #include "Components/WidgetSwitcher.h"
 #include "Components/EditableTextBox.h"
+#include "Components/TextBlock.h"
 #include "UObject/ConstructorHelpers.h"
 
 #include "ServerRow.h"
@@ -17,6 +18,20 @@ UMainMenu::UMainMenu(const FObjectInitializer & ObjectInitializer)
 		return;
 
 	ServerRowClass = ServerRowBPClass.Class;
+}
+
+void UMainMenu::SetServerList(TArray<FString> ServerNames)
+{
+	ServerList->ClearChildren();
+
+	for (const FString& ServerName : ServerNames)
+	{
+		auto* Row = CreateWidget<UServerRow>(this, ServerRowClass);
+		if (!ensure(Row != nullptr)) return;
+
+		Row->ServerName->SetText(FText::FromString(ServerName));
+		ServerList->AddChild(Row);
+	}
 }
 
 
@@ -36,12 +51,7 @@ void UMainMenu::JoinServer()
 		//	return;
 
 		//const FString& Adress = IPAdressField->GetText().ToString();
-		//MenuInterface->Join(Adress);
-
-		auto* Row = CreateWidget<UServerRow>(this, ServerRowClass);
-		if (!ensure(Row != nullptr)) return;
-
-		ServerList->AddChild(Row);
+		MenuInterface->Join("");
 	}
 }
 
@@ -53,6 +63,10 @@ void UMainMenu::OpenJoinMenu()
 		return;
 
 	MenuSwitcher->SetActiveWidget(JoinMenu);
+	if (MenuInterface != nullptr)
+	{
+		MenuInterface->RefreshServerList();
+	}
 }
 
 void UMainMenu::OpenMainMenu()
