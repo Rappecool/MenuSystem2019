@@ -4,7 +4,21 @@
 #include "Button.h"
 #include "Components/WidgetSwitcher.h"
 #include "Components/EditableTextBox.h"
+#include "UObject/ConstructorHelpers.h"
+
+#include "ServerRow.h"
 #include "PuzzlePlatformsGameInstance.h"
+
+
+UMainMenu::UMainMenu(const FObjectInitializer & ObjectInitializer)
+{
+	static ConstructorHelpers::FClassFinder<UUserWidget> ServerRowBPClass(TEXT("/Game/MenuSystem/WBP_ServerRow"));
+	if (!ensure(ServerRowBPClass.Class != nullptr))
+		return;
+
+	ServerRowClass = ServerRowBPClass.Class;
+}
+
 
 void UMainMenu::HostServer()
 {
@@ -18,12 +32,16 @@ void UMainMenu::JoinServer()
 {
 	if (MenuInterface != nullptr)
 	{
-		if (!ensure(IPAdressField != nullptr))
-			return;
+		//if (!ensure(IPAdressField != nullptr))
+		//	return;
 
-		const FString& Adress = IPAdressField->GetText().ToString();
-		MenuInterface->Join(Adress);
-		UE_LOG(LogTemp, Warning, TEXT("JoinServer MainMenu called."));
+		//const FString& Adress = IPAdressField->GetText().ToString();
+		//MenuInterface->Join(Adress);
+
+		auto* Row = CreateWidget<UServerRow>(this, ServerRowClass);
+		if (!ensure(Row != nullptr)) return;
+
+		ServerList->AddChild(Row);
 	}
 }
 

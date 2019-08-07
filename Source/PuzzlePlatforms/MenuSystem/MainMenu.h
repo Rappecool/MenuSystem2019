@@ -36,7 +36,7 @@ class PUZZLEPLATFORMS_API UMainMenu : public UMenuWidget
 	class UWidget* MainMenu;
 
 	UPROPERTY(meta = (BindWidget))
-	class UEditableTextBox* IPAdressField;
+	class UPanelWidget* ServerList;
 
 	UPROPERTY(meta = (BindWidget))
 	class UButton* ConfirmJoinMenuButton;
@@ -59,9 +59,11 @@ class PUZZLEPLATFORMS_API UMainMenu : public UMenuWidget
 	UFUNCTION()
 	void ExitPressed();
 
+	TSubclassOf<class UUserWidget> ServerRowClass;
 
 protected:
 	virtual bool Initialize();
 
 public:
+	UMainMenu(const FObjectInitializer & ObjectInitializer);
 };
