@@ -13,10 +13,20 @@ UCLASS()
 class PUZZLEPLATFORMS_API UServerRow : public UUserWidget
 {
 	GENERATED_BODY()
+private:
+	UPROPERTY(meta = (BindWidget))
+	class UButton* RowButton;
+
+	UPROPERTY()
+	class UMainMenu* Parent;
+	uint32 Index; 
 
 public:
 
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* ServerName;
-	
+
+	bool Setup(class UMainMenu* Parent, uint32 Index);
+	UFUNCTION()
+	void RowButtonPressed();
 };

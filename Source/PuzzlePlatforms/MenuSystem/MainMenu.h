@@ -61,11 +61,15 @@ class PUZZLEPLATFORMS_API UMainMenu : public UMenuWidget
 
 	TSubclassOf<class UUserWidget> ServerRowClass;
 
+	//TOptional is nullable.
+	TOptional<uint32> SelectedIndex;
+
 protected:
 	virtual bool Initialize();
 
 public:
 	UMainMenu(const FObjectInitializer & ObjectInitializer);
 	void SetServerList(TArray<FString> ServerNames);
+	void SelectIndex(uint32 Index);
 
 };
