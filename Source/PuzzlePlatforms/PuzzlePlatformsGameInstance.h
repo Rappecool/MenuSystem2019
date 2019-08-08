@@ -37,7 +37,7 @@ public:
 			
 			//Attempts to join game hosted by given IpAdress, through clientTravel.
 		UFUNCTION(EXEC)
-			void Join(const FString &IpAddress) override;
+		virtual void Join(uint32 Index) override;
 
 		virtual void LoadMainMenu() override;
 		virtual void RefreshServerList() override;
@@ -57,6 +57,7 @@ private:
 		void OnCreateSessionComplete(FName SessionName, bool Success);
 		void OnDestroySessionComplete(FName SessionName, bool Success);
 		void OnFindSessionComplete(bool Success);
+		void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
 
 		void CreateSession();
 

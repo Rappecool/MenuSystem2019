@@ -12,7 +12,7 @@ bool UServerRow::Setup(UMainMenu * Parent, uint32 Index)
 	this->Index = Index;
 
 	if (!ensure(this->Parent != nullptr))
-		return;
+		return false;
 
 	RowButton->OnClicked.AddDynamic(this, &UServerRow::RowButtonPressed);
 	return true;

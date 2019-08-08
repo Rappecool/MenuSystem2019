@@ -91,6 +91,7 @@ void UPuzzlePlatformsGameInstance::Init()
 		SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UPuzzlePlatformsGameInstance::OnCreateSessionComplete);
 		SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UPuzzlePlatformsGameInstance::OnDestroySessionComplete);
 		SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UPuzzlePlatformsGameInstance::OnFindSessionComplete);
+		SessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &UPuzzlePlatformsGameInstance::OnJoinSessionComplete);
 	}
 }
 
@@ -111,27 +112,17 @@ void UPuzzlePlatformsGameInstance::Host()
 	}
 }
 
-void UPuzzlePlatformsGameInstance::Join(const FString &IpAddress)
+void UPuzzlePlatformsGameInstance::Join(uint32 Index)
 {
+	if (!SessionInterface.IsValid() && !SessionSearch.IsValid())
+		return;
+
 	if (Menu != nullptr)
 	{
-		Menu->SetServerList({"Test1", "Test2"});
-		//Menu->OnLevelRemovedFromWorld(GetWorld()->GetCurrentLevel(), GetWorld());
+		Menu->OnLevelRemovedFromWorld(GetWorld()->GetCurrentLevel(), GetWorld());
 	}
-
-	//	//TODO move GetEngine() to own function.
-	//UEngine* Engine = GetEngine();
-	//if (!ensure(Engine != nullptr))
-	//	return;
-
-	//Engine->AddOnScreenDebugMessage(-1, 2, FColor::Green, FString::Printf( TEXT("Joining %s"), *IpAddress));
-
-	//APlayerController* PlayerController = GetFirstLocalPlayerController();
-
-	//if (!ensure(PlayerController != nullptr))
-	//	return;
-	//	
-	//PlayerController->ClientTravel(IpAddress, TRAVEL_Absolute);
+	
+	SessionInterface->JoinSession(0, SESSION_NAME, SessionSearch->SearchResults[Index]);
 }
 
 void UPuzzlePlatformsGameInstance::LoadMainMenu()
@@ -208,6 +199,35 @@ void UPuzzlePlatformsGameInstance::OnFindSessionComplete(bool Success)
 			Menu->SetServerList(ServerNames);
 		}
 		UE_LOG(LogTemp, Warning, TEXT("OSS: Finished OnFindSessionComplete."));
+	}
+}
+
+void UPuzzlePlatformsGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result)
+{
+	if (!SessionInterface.IsValid())
+			return;
+
+	FString Address;
+	if (!SessionInterface->GetResolvedConnectString(SessionName, Address))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Could not get Connect String."));
+		return;
+	}
+
+		//TODO move GetEngine() to own function.
+	UEngine* Engine = GetEngine();
+	if (!ensure(Engine != nullptr))
+		return;
+
+	APlayerController* PlayerController = GetFirstLocalPlayerController();
+
+	if (!ensure(PlayerController != nullptr))
+		return;
+	PlayerController->ClientTravel(Address, TRAVEL_Absolute);
+
+	if (Result != EOnJoinSessionCompleteResult::Success)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("OnJoinSessionComplete Unsuccessful. Print other Enums and try to catch error."));
 	}
 }
 

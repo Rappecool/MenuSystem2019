@@ -54,21 +54,19 @@ void UMainMenu::HostServer()
 
 void UMainMenu::JoinServer()
 {
-	if (SelectedIndex.IsSet())
+	if (SelectedIndex.IsSet() && MenuInterface != nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("SelectedIndex: %d"), SelectedIndex.GetValue());
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("SelectedIndex not set."));
-	}
-	if (MenuInterface != nullptr)
-	{
+
 		//if (!ensure(IPAdressField != nullptr))
 		//	return;
 
 		//const FString& Adress = IPAdressField->GetText().ToString();
-		MenuInterface->Join("");
+		MenuInterface->Join(SelectedIndex.GetValue());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("SelectedIndex not set."));
 	}
 }
 
