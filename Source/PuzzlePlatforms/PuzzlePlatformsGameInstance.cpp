@@ -192,18 +192,25 @@ void UPuzzlePlatformsGameInstance::OnFindSessionComplete(bool Success)
 {
 	if (Success && SessionSearch.IsValid() && Menu != nullptr)
 	{
-		TArray<FString> ServerNames;
+		TArray<FServerData> ServerNames;
 			//Test data for UI.
-		ServerNames.Add("Test Server 1");
-		ServerNames.Add("Test Server 2");
-		ServerNames.Add("Test Server 3");
+		//ServerNames.Add("Test Server 1");
+		//ServerNames.Add("Test Server 2");
+		//ServerNames.Add("Test Server 3");
 
 
-		for (const auto& searchResult : SessionSearch->SearchResults)
+		for (const auto& SearchResult : SessionSearch->SearchResults)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("OSS - Found Session: nameSessionsIDs is: %s ."), *searchResult.GetSessionIdStr());
-			ServerNames.Add(searchResult.GetSessionIdStr());
+			UE_LOG(LogTemp, Warning, TEXT("OSS - Found Session: nameSessionsIDs is: %s ."), *SearchResult.GetSessionIdStr());
+			FServerData ServerData;
+			ServerData.Name = SearchResult.GetSessionIdStr();
+			ServerData.CurrentPlayers = SearchResult.Session.NumOpenPublicConnections;
+			ServerData.MaxPlayers = SearchResult.Session.SessionSettings.NumPublicConnections;
+			ServerData.HostUserName = SearchResult.Session.OwningUserName;
+			
+			ServerNames.Add(ServerData);
 		}
+
 		Menu->SetServerList(ServerNames);
 		UE_LOG(LogTemp, Warning, TEXT("OSS: Finished OnFindSessionComplete."));
 	}
@@ -242,8 +249,16 @@ void UPuzzlePlatformsGameInstance::CreateSession()
 {
 	if (SessionInterface.IsValid())
 	{
-	FOnlineSessionSettings SessionSettings;
-	SessionSettings.bIsLANMatch = false;
+		FOnlineSessionSettings SessionSettings;
+
+		if (IOnlineSubsystem::Get()->GetSubsystemName() == "NULL")
+		{
+			SessionSettings.bIsLANMatch = true;
+		}
+		else
+		{
+			SessionSettings.bIsLANMatch = false;
+		}
 	SessionSettings.NumPublicConnections = 2;
 	SessionSettings.bShouldAdvertise = true; //enables Steam to find this among server lists.
 	SessionSettings.bUsesPresence = true; //enables Steam to find this among server lists.
