@@ -193,13 +193,18 @@ void UPuzzlePlatformsGameInstance::OnFindSessionComplete(bool Success)
 	if (Success && SessionSearch.IsValid() && Menu != nullptr)
 	{
 		TArray<FString> ServerNames;
+			//Test data for UI.
+		ServerNames.Add("Test Server 1");
+		ServerNames.Add("Test Server 2");
+		ServerNames.Add("Test Server 3");
+
 
 		for (const auto& searchResult : SessionSearch->SearchResults)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("OSS - Found Session: nameSessionsIDs is: %s ."), *searchResult.GetSessionIdStr());
 			ServerNames.Add(searchResult.GetSessionIdStr());
-			Menu->SetServerList(ServerNames);
 		}
+		Menu->SetServerList(ServerNames);
 		UE_LOG(LogTemp, Warning, TEXT("OSS: Finished OnFindSessionComplete."));
 	}
 }
@@ -240,8 +245,8 @@ void UPuzzlePlatformsGameInstance::CreateSession()
 	FOnlineSessionSettings SessionSettings;
 	SessionSettings.bIsLANMatch = false;
 	SessionSettings.NumPublicConnections = 2;
-	SessionSettings.bShouldAdvertise = true;
-	SessionSettings.bUsesPresence = true;
+	SessionSettings.bShouldAdvertise = true; //enables Steam to find this among server lists.
+	SessionSettings.bUsesPresence = true; //enables Steam to find this among server lists.
 
 	SessionInterface->CreateSession(0, SESSION_NAME, SessionSettings);
 	}

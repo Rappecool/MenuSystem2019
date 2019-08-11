@@ -21,5 +21,4 @@ bool UServerRow::Setup(UMainMenu * Parent, uint32 Index)
 void UServerRow::RowButtonPressed()
 {
 	Parent->SelectIndex(Index);
-	//TODO: Select server and todo2 join that server.
 }

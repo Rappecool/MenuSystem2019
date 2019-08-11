@@ -42,6 +42,7 @@ void UMainMenu::SetServerList(TArray<FString> ServerNames)
 void UMainMenu::SelectIndex(uint32 Index)
 {
 	SelectedIndex = Index;
+	UpdateChildren();
 }
 
 void UMainMenu::HostServer()
@@ -100,6 +101,21 @@ void UMainMenu::ExitPressed()
 	if (!ensure(PlayerController != nullptr)) return;
 	
 	PlayerController->ConsoleCommand("quit");
+}
+
+void UMainMenu::UpdateChildren()
+{
+	if (ServerList == nullptr)
+		return;
+
+	for (int32 i = 0; i < ServerList->GetChildrenCount(); i++)
+	{
+		auto Row = Cast<UServerRow>(ServerList->GetChildAt(i));
+		if (Row != nullptr)
+		{
+			Row->Selected = (SelectedIndex.IsSet() && SelectedIndex.GetValue() == i); //OBS, Checks left-most statement first, "short-circuit".
+		}
+	}
 }
 
 bool UMainMenu::Initialize()

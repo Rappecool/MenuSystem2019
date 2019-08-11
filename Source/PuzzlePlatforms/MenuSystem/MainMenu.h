@@ -59,6 +59,8 @@ class PUZZLEPLATFORMS_API UMainMenu : public UMenuWidget
 	UFUNCTION()
 	void ExitPressed();
 
+	void UpdateChildren();
+
 	TSubclassOf<class UUserWidget> ServerRowClass;
 
 	//TOptional is nullable.

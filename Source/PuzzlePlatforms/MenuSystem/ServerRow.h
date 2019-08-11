@@ -29,4 +29,7 @@ public:
 	bool Setup(class UMainMenu* Parent, uint32 Index);
 	UFUNCTION()
 	void RowButtonPressed();
+	UPROPERTY(BlueprintReadOnly)
+	bool Selected = false;
+
 };
