@@ -33,8 +33,7 @@ void UMainMenu::SetServerList(TArray<FServerData> ServerNames)
 
 		Row->ServerName->SetText(FText::FromString(ServerData.Name));
 		Row->HostUser->SetText(FText::FromString(ServerData.HostUserName));
-		Row->ConnectionFraction->SetText(FText::FromString(FString::Printf(TEXT("%d/%d"),ServerData.CurrentPlayers,ServerData.MaxPlayers)));
-		
+		Row->ConnectionFraction->SetText(FText::FromString(FString::Printf(TEXT("%d/%d"),ServerData.CurrentPlayers, ServerData.MaxPlayers)));
 		
 		Row->Setup(this, i);
 		++i;
@@ -49,12 +48,25 @@ void UMainMenu::SelectIndex(uint32 Index)
 	UpdateChildren();
 }
 
+FName UMainMenu::GetHostName() const
+{
+	if (!ensure(ServerHostName != nullptr))
+		return "";
+
+	FString ConvertedFText = ServerHostName->GetText().ToString();
+	FName ConvertedFString = FName(*ConvertedFText);
+	return ConvertedFString;
+}
+
 void UMainMenu::HostServer()
 {
 	if (!ensure(MenuInterface != nullptr))
 			return;
 		
-	MenuInterface->Host();
+	if (ServerHostName != nullptr)
+	{
+	MenuInterface->Host(GetHostName());
+	}
 }
 
 void UMainMenu::JoinServer()
@@ -62,11 +74,6 @@ void UMainMenu::JoinServer()
 	if (SelectedIndex.IsSet() && MenuInterface != nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("SelectedIndex: %d"), SelectedIndex.GetValue());
-
-		//if (!ensure(IPAdressField != nullptr))
-		//	return;
-
-		//const FString& Adress = IPAdressField->GetText().ToString();
 		MenuInterface->Join(SelectedIndex.GetValue());
 	}
 	else
@@ -97,6 +104,16 @@ void UMainMenu::OpenMainMenu()
 		return;
 
 	MenuSwitcher->SetActiveWidget(MainMenu);
+}
+
+void UMainMenu::OpenHostMenu()
+{
+	if (!ensure(MenuSwitcher != nullptr))
+		return;
+	if (!ensure(HostMenu != nullptr))
+		return;
+
+	MenuSwitcher->SetActiveWidget(HostMenu);
 }
 
 void UMainMenu::ExitPressed()
@@ -130,23 +147,30 @@ bool UMainMenu::Initialize()
 	
 	if (!ensure(HostButton != nullptr)) return false;
 	//Binds onClicked variable from HostButton to our HostServer function.
-	HostButton->OnClicked.AddDynamic(this, &UMainMenu::HostServer);
+	HostButton->OnClicked.AddDynamic(this, &UMainMenu::OpenHostMenu);
 
 	if (!ensure(JoinButton != nullptr)) return false;
 	//Binds onClicked variable from JoinButton to our OpenJoinMenu function.
 	JoinButton->OnClicked.AddDynamic(this, &UMainMenu::OpenJoinMenu);
 
 	if (!ensure(ExitButton != nullptr)) return false;
-	//Binds onClicked variable from JoinButton to our OpenJoinMenu function.
 	ExitButton->OnClicked.AddDynamic(this, &UMainMenu::ExitPressed);
 
 	if (!ensure(CancelJoinMenuButton != nullptr)) return false;
 	//Binds onClicked variable from CancelJoinMenuButton to our OpenMainMenu function.
 	CancelJoinMenuButton->OnClicked.AddDynamic(this, &UMainMenu::OpenMainMenu);
 
+	if (!ensure(CancelHostMenuButton != nullptr)) return false;
+	//Binds onClicked variable from CancelJoinMenuButton to our OpenMainMenu function.
+	CancelHostMenuButton->OnClicked.AddDynamic(this, &UMainMenu::OpenMainMenu);
+
 	if (!ensure(ConfirmJoinMenuButton != nullptr)) return false;
 	//Binds onClicked variable from JoinButton to our OpenJoinMenu function.
 	ConfirmJoinMenuButton->OnClicked.AddDynamic(this, &UMainMenu::JoinServer);
+
+	if (!ensure(ConfirmHostMenuButton != nullptr)) return false;
+	//Binds onClicked variable from JoinButton to our OpenJoinMenu function.
+	ConfirmHostMenuButton->OnClicked.AddDynamic(this, &UMainMenu::HostServer);
 	
 	return true;
 }

@@ -16,6 +16,7 @@
 #include "MenuSystem/MenuWidget.h"
 
 const static FName SESSION_NAME = TEXT("My Session Game");
+const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
 
 UPuzzlePlatformsGameInstance::UPuzzlePlatformsGameInstance(const FObjectInitializer & ObjectInitializer)
 {
@@ -95,15 +96,16 @@ void UPuzzlePlatformsGameInstance::Init()
 	}
 }
 
-void UPuzzlePlatformsGameInstance::Host()
+void UPuzzlePlatformsGameInstance::Host(FName HostName)
 {
-	if (SessionInterface.IsValid())
+	DesiredServerName = HostName.ToString();
+	if (SessionInterface.IsValid() && Menu != nullptr)
 	{
-		auto ExistingSession = SessionInterface->GetNamedSession(SESSION_NAME);
+		auto ExistingSession = SessionInterface->GetNamedSession(Menu->GetHostName());
 
 		if (ExistingSession != nullptr)
 		{
-			SessionInterface->DestroySession(SESSION_NAME);
+			SessionInterface->DestroySession(Menu->GetHostName());
 		}
 		else
 		{
@@ -121,8 +123,7 @@ void UPuzzlePlatformsGameInstance::Join(uint32 Index)
 	{
 		Menu->OnLevelRemovedFromWorld(GetWorld()->GetCurrentLevel(), GetWorld());
 	}
-	
-	SessionInterface->JoinSession(0, SESSION_NAME, SessionSearch->SearchResults[Index]);
+	SessionInterface->JoinSession(0,Menu->GetHostName(), SessionSearch->SearchResults[Index]);
 }
 
 void UPuzzlePlatformsGameInstance::LoadMainMenu()
@@ -203,11 +204,20 @@ void UPuzzlePlatformsGameInstance::OnFindSessionComplete(bool Success)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("OSS - Found Session: nameSessionsIDs is: %s ."), *SearchResult.GetSessionIdStr());
 			FServerData ServerData;
-			ServerData.Name = SearchResult.GetSessionIdStr();
+
 			ServerData.MaxPlayers = SearchResult.Session.SessionSettings.NumPublicConnections;
 			ServerData.CurrentPlayers = ServerData.MaxPlayers - SearchResult.Session.NumOpenPublicConnections;
 			ServerData.HostUserName = SearchResult.Session.OwningUserName;
-			
+
+			FString ServerName;
+			if (SearchResult.Session.SessionSettings.Get(SERVER_NAME_SETTINGS_KEY, ServerName))
+			{
+				ServerData.Name = ServerName;
+			}
+			else
+			{
+				ServerData.Name = "Could not find name.";
+			}
 			ServerNames.Add(ServerData);
 		}
 
@@ -259,10 +269,12 @@ void UPuzzlePlatformsGameInstance::CreateSession()
 		{
 			SessionSettings.bIsLANMatch = false;
 		}
-	SessionSettings.NumPublicConnections = 2;
-	SessionSettings.bShouldAdvertise = true; //enables Steam to find this among server lists.
-	SessionSettings.bUsesPresence = true; //enables Steam to find this among server lists.
+		SessionSettings.NumPublicConnections = 2;
+		SessionSettings.bShouldAdvertise = true; //enables Steam to find this among server lists.
+		SessionSettings.bUsesPresence = true; //enables Steam to find this among server lists.
 
-	SessionInterface->CreateSession(0, SESSION_NAME, SessionSettings);
+		SessionSettings.Set(SERVER_NAME_SETTINGS_KEY, DesiredServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+	
+		SessionInterface->CreateSession(0, Menu->GetHostName(), SessionSettings);
 	}
 }

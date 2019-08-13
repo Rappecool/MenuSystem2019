@@ -41,7 +41,13 @@ class PUZZLEPLATFORMS_API UMainMenu : public UMenuWidget
 	class UButton* CancelJoinMenuButton;
 
 	UPROPERTY(meta = (BindWidget))
+	class UButton* CancelHostMenuButton;
+
+	UPROPERTY(meta = (BindWidget))
 	class UWidget* JoinMenu;
+
+	UPROPERTY(meta = (BindWidget))
+	class UWidget* HostMenu;
 
 	UPROPERTY(meta = (BindWidget))
 	class UWidget* MainMenu;
@@ -53,7 +59,13 @@ class PUZZLEPLATFORMS_API UMainMenu : public UMenuWidget
 	class UButton* ConfirmJoinMenuButton;
 
 	UPROPERTY(meta = (BindWidget))
+	class UButton* ConfirmHostMenuButton;
+
+	UPROPERTY(meta = (BindWidget))
 	class UWidgetSwitcher* MenuSwitcher;
+
+	UPROPERTY(meta = (BindWidget))
+	class UEditableTextBox* ServerHostName;
 
 	UFUNCTION()
 	void HostServer();
@@ -66,6 +78,9 @@ class PUZZLEPLATFORMS_API UMainMenu : public UMenuWidget
 
 	UFUNCTION()
 	void OpenMainMenu();
+
+	UFUNCTION()
+	void OpenHostMenu();
 
 	UFUNCTION()
 	void ExitPressed();
@@ -84,5 +99,6 @@ public:
 	UMainMenu(const FObjectInitializer & ObjectInitializer);
 	void SetServerList(TArray<FServerData> ServerNames);
 	void SelectIndex(uint32 Index);
+	FName GetHostName() const;
 
 };

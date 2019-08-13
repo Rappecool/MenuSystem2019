@@ -33,7 +33,7 @@ public:
 
 			//Hosts game, enables ?listen so joining can occur. changes level through WorldTravel.
 		UFUNCTION(Exec)
-			void Host() override;
+			void Host(FName HostName) override;
 			
 			//Attempts to join game hosted by given IpAdress, through clientTravel.
 		UFUNCTION(EXEC)
@@ -53,6 +53,7 @@ private:
 		IOnlineSessionPtr SessionInterface;
 		TSharedPtr <class FOnlineSessionSearch> SessionSearch;
 
+		FString DesiredServerName;
 
 		void OnCreateSessionComplete(FName SessionName, bool Success);
 		void OnDestroySessionComplete(FName SessionName, bool Success);
