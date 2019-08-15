@@ -55,9 +55,6 @@ void UPuzzlePlatformsGameInstance::LoadMenuWidget()
 
 void UPuzzlePlatformsGameInstance::InGameLoadMenu()
 {
-		//OBS: Difference between Patuzzi, Try copying github code, aka Create UserWidget. DONE, didn't work.
-		//17/7 update, Init still not getting called.
-
 	if (!ensure(InGameMenuClass != nullptr)) return;
 	//Creates Menu widget, to use our MenuWidget_BP.
 	UMenuWidget* InGameMenuWidget = CreateWidget<UMenuWidget>(this, InGameMenuClass); //perhaps should be created on Init before.
@@ -269,7 +266,7 @@ void UPuzzlePlatformsGameInstance::CreateSession()
 		{
 			SessionSettings.bIsLANMatch = false;
 		}
-		SessionSettings.NumPublicConnections = 2;
+		SessionSettings.NumPublicConnections = 100;
 		SessionSettings.bShouldAdvertise = true; //enables Steam to find this among server lists.
 		SessionSettings.bUsesPresence = true; //enables Steam to find this among server lists.
 

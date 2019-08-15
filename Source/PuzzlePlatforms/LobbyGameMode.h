@@ -14,7 +14,7 @@ class PUZZLEPLATFORMS_API ALobbyGameMode : public APuzzlePlatformsGameMode
 {
 	GENERATED_BODY()
 private:
-	static int16 NumberOfPlayersInLobby = 0;
+	int16 NumberOfPlayersInLobby = 0;
 
 public:
 	 void PostLogin(APlayerController* NewPlayer) override;
