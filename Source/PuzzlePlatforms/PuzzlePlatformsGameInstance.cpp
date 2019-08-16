@@ -10,6 +10,7 @@
 #include "OnlineSubsystem.h"
 #include "OnlineSessionSettings.h"
 #include "Runtime/Core/Public/Containers/Array.h"
+#include "UnrealNames.h"
 
 #include "MenuSystem/MainMenu.h"
 #include "MenuSystem/InGameMenu.h"
@@ -17,6 +18,7 @@
 
 const static FName SESSION_NAME = TEXT("My Session Game");
 const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
+const static FName Name = NAME_GameSession;
 
 UPuzzlePlatformsGameInstance::UPuzzlePlatformsGameInstance(const FObjectInitializer & ObjectInitializer)
 {
