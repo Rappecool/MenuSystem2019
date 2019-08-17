@@ -38,6 +38,7 @@ public:
 			//Attempts to join game hosted by given IpAdress, through clientTravel.
 		UFUNCTION(EXEC)
 		virtual void Join(uint32 Index) override;
+		void StartSession();
 
 		virtual void LoadMainMenu() override;
 		virtual void RefreshServerList() override;
